@@ -23,6 +23,11 @@ def generate_site_pp():
     site = ''.join('include "roles::%s"\n' % role for role in sorted(current_roles()))
     return site
 
+def get_puppet_dir():
+    """
+    In some cases, puppet dir is custom
+    """
+    return env.get('puppet_dir', env.real_fabfile)
 
 @task
 @requires_puppet
@@ -34,18 +39,25 @@ def update():
         abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
 
     # Install local modules
-    module_dir = env.get('puppet_module_dir', 'modules/')
+    module_dir = os.path.join(get_puppet_dir(), 'modules/')
     if not module_dir.endswith('/'): module_dir+='/'
     upload_dir(module_dir, '/etc/puppet/modules', use_sudo=True)
 
     # Install vendor modules
-    put('Puppetfile', '/etc/puppet/Puppetfile', use_sudo=True)
+    put(os.path.join(get_puppet_dir(), 'Puppetfile'), '/etc/puppet/Puppetfile', use_sudo=True)
     with cd('/etc/puppet'):
         sudo('librarian-puppet install --path /etc/puppet/vendor')
 
     # Install site.pp
     sudo('mkdir -p /etc/puppet/manifests')
-    put(StringIO(generate_site_pp()), '/etc/puppet/manifests/site.pp', use_sudo=True)
+    
+    # Check if site.pp already exists. If so, use that.
+    site_pp_path = os.path.join(get_puppet_dir(), 'manifests', 'site.pp')
+    if os.path.isfile(site_pp_path):
+        site_pp_content = site_pp_path
+    else:
+        site_pp_content = StringIO(generate_site_pp())
+    put(site_pp_content, '/etc/puppet/manifests/site.pp', use_sudo=True)
 
 
 @task

@@ -6,8 +6,8 @@ env.user = 'ubuntu'
 # Default puppet environment
 env.environment = 'prod'
 
-# Default puppet module directory
-env.puppet_module_dir = 'modules/'
+# The directory where `manifests` and `modules` directories live
+env.puppet_dir = './'
 
 # Default puppet version
 # If loom_puppet_version is None, loom installs the latest version
