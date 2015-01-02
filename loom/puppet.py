@@ -102,6 +102,7 @@ def install():
     with settings(warn_only=True):
         sudo('apt-get -y -q install rubygems')
     sudo('apt-get -y -q install ruby ruby-dev git')
+    sudo('apt-get -y -q install build-essentials')
 
     puppet_version = env.get('loom_puppet_version')
     sudo(_gem_install('puppet', version=puppet_version))
