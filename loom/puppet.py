@@ -57,7 +57,7 @@ def update():
     # Install site.pp
     sudo('mkdir -p /etc/puppet/manifests')
     
-    # Check if site.pp already exists. If so, use that.
+    # Check if local site.pp exists. If so, use that.
     site_pp_path = os.path.join(get_puppet_dir(), 'manifests', 'site.pp')
     if os.path.isfile(site_pp_path):
         site_pp_content = site_pp_path
@@ -65,6 +65,10 @@ def update():
         site_pp_content = StringIO(generate_site_pp())
     put(site_pp_content, '/etc/puppet/manifests/site.pp', use_sudo=True)
 
+    # Install hiera.yaml
+    hiera_path = os.path.join(get_puppet_dir(), 'hiera.yaml')
+    if os.path.isfile(hiera_path):
+        put(hiera_path, '/etc/puppet/hiera.yaml', use_sudo=True)
 
 @task
 def update_configs():
