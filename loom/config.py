@@ -9,6 +9,9 @@ env.environment = 'prod'
 # The directory where `manifests` and `modules` directories live
 env.puppet_dir = './'
 
+# Default puppet module directory (defaults to {puppet_dir}/modules)
+env.puppet_module_dir = 'modules/'
+
 # Default puppet version
 # If loom_puppet_version is None, loom installs the latest version
 env.loom_puppet_version = '3.1.1'

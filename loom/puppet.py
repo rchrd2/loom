@@ -24,10 +24,16 @@ def generate_site_pp():
     return site
 
 def get_puppet_dir():
-    """
-    In some cases, puppet dir is custom
-    """
     return env.get('puppet_dir', env.real_fabfile)
+
+def get_module_dir():
+    """
+    Keep support for old `puppet_module_dir` config option
+    """
+    if env.get('puppet_module_dir', None):
+        return env.get('puppet_module_dir')
+    else:
+        return os.path.join(get_puppet_dir(), 'modules/')
 
 @task
 @requires_puppet
@@ -39,7 +45,7 @@ def update():
         abort('Host "%s" has no roles. Does it exist in this environment?' % env.host_string)
 
     # Install local modules
-    module_dir = os.path.join(get_puppet_dir(), 'modules/')
+    module_dir = get_module_dir()
     if not module_dir.endswith('/'): module_dir+='/'
     upload_dir(module_dir, '/etc/puppet/modules', use_sudo=True)
 
